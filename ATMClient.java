@@ -3,7 +3,7 @@ import java.net.*;
 import java.util.Scanner;
 
 /**
- *  @author Snilledata
+ *  @author Snilledata eller inte
 */
 public class ATMClient {
     private static int connectionPort = 8989;
