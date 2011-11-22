@@ -1,3 +1,5 @@
+package se.kth.progp.inet.server;
+
 import java.net.*;
 import java.io.*;
 
@@ -23,7 +25,7 @@ public class Server {
 	
         System.out.println("Bank started listening on port: " + connectionPort);
         while (listening)
-            new ATMServerThread(serverSocket.accept()).start();
+            new ServerThread(serverSocket.accept()).start();
 
         serverSocket.close();
     }
