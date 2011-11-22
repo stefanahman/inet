@@ -1,7 +1,6 @@
-package se.kth.progp.inet.server;
-
 import java.net.*;
 import java.io.*;
+
 
 /**
  *  @author Viebrapadata
