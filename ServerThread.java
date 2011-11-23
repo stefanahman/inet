@@ -6,26 +6,51 @@ public class ServerThread extends Thread {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private long[] returnArray;
-    private ServerByteUnpacker sbu = new ServerByteUnpacker();
+	
+	private ServerByteUnpacker sbu = new ServerByteUnpacker();
+	private ServerBytePacker sbp = new ServerBytePacker();
     public ServerThread(Socket socket) {
         super("ServerThread");
         this.socket = socket;
     }
     
-    private void checkStatus(byte[] bytePackage){
+
+    private void checkStatus(byte[] bytePackage) throws IOException{
 		switch(bytePackage[0]){
-		case 0x00: 
+		case 0x00:
+			returnArray = new long[2];
 			returnArray[0] = sbu.loginGetCardNumber(bytePackage);
 			returnArray[1] = sbu.loginGetPin(bytePackage);
-			validateUser(returnArray[0], returnArray[1]);
+			if(validateUser(returnArray[0], returnArray[1])){
+				System.out.println("s");
+				out.flush();
+				out.write(sbp.loginsucess());
+			} else {
+				System.out.println("f");
+				out.flush();
+				out.write(sbp.loginfailed());
+			}
+			
+			break;
 		case 0x01: 
 			returnArray[0] = sbu.writeBalance(bytePackage);
+			System.out.println("Balance:");
+			System.out.println(returnArray[0]);
+			break;
 		case 0x02: 
 			returnArray[0] = sbu.getSecurityCode(bytePackage);
 			returnArray[1] = sbu.getAmount(bytePackage);
+			System.out.println("Withraw:");
+			System.out.println(returnArray[0]);
+			System.out.println(returnArray[1]);
+			break;
 		case 0x03: 
 			returnArray[0] = sbu.getSecurityCode(bytePackage);
 			returnArray[1] = sbu.getAmount(bytePackage);
+			System.out.println("Deposit:");
+			System.out.println(returnArray[0]);
+			System.out.println(returnArray[1]);
+			break;
 		default:
 			break;
 		}
@@ -38,9 +63,9 @@ public class ServerThread extends Thread {
     
     private boolean validateUser(long cardNumber, long pin) {
         int numberOfUsers = 3;
-        int[][] userList = new int[numberOfUsers][2];
+        long[][] userList = new long[numberOfUsers][2];
 
-        userList[0][0] = 1234; userList[0][1] = 1234;
+        userList[0][0] = 1234123412341234L; userList[0][1] = 1234;
         userList[1][0] = 1337; userList[1][1] = 6666;
         userList[2][0] = 0000; userList[2][1] = 9999;
 
@@ -57,17 +82,26 @@ public class ServerThread extends Thread {
     }
     
     public void run(){
+		
     	try {
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
-            
-            int i = 0;
-            
-            byte[] test = new byte[10];
+                   
+            byte[] buffer = new byte[10];
+
+    		in.read(buffer,0,10);
+    		
+    		checkStatus(buffer);
+    		
+    		in.read(buffer,0,10);
+    		
+    		checkStatus(buffer);
+        	
+        	int i = 0;
             
             while(i != 1){
-            	in.read(test,0,10);
-            	checkStatus(test);
+
+        		
             }
             
             out.close();

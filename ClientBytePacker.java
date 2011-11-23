@@ -8,10 +8,7 @@ public class ClientBytePacker {
 	final byte WITHDRAWAL = 0x02;
 	final byte DEPOSIT = 0x03;
 	
-	public void ClientBytePacker() {
-	}
-
-	public byte[] login(int cardnumber, int pin){
+	public byte[] login(long cardnumber, int pin){
 		bytePackage[0] = LOGIN;
 		bytePackage[1] = (byte)(pin >> 8);
 		bytePackage[2] = (byte)(pin >> 0);

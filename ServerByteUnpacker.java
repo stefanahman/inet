@@ -3,6 +3,8 @@ public class ServerByteUnpacker {
 	
 	
 	private byte tempByte;
+	private long tempLong;
+	private int tempInt;
 	
 	public ServerByteUnpacker(){
 		
@@ -10,45 +12,46 @@ public class ServerByteUnpacker {
 
 	
 	public long loginGetCardNumber(byte[] bytePackage){
-		tempByte = 0;
-		tempByte = (byte) (tempByte << 0 | bytePackage[3]);
-		tempByte = (byte) (tempByte << 8 | bytePackage[4]);
-		tempByte = (byte) (tempByte << 16 | bytePackage[5]);
-		tempByte = (byte) (tempByte << 24 | bytePackage[6]);
-		tempByte = (byte) (tempByte << 32 | bytePackage[7]);
-		tempByte = (byte) (tempByte << 40 | bytePackage[8]);
-		tempByte = (byte) (tempByte << 48 | bytePackage[9]);
-		return tempByte;
-		
+		tempLong = 0;
+		tempLong = (tempLong << 8 | (bytePackage[3] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[4] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[5] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[6] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[7] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[8] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[9] & 0xFF));
+		return tempLong;	
 	}
 	
 	public int loginGetPin(byte[] bytePackage){
-		tempByte = (byte) (tempByte << 0 | bytePackage[1]);
-		tempByte = (byte) (tempByte << 8 | bytePackage[2]);
-		return tempByte;
+		tempInt = 0;
+		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));
+		tempInt = (tempInt << 8 | (bytePackage[2] & 0xFF));
+		return tempInt;
 		
 	}
 	
 	public int getSecurityCode(byte[] bytePackage){
-		tempByte = (byte) (tempByte << 0 | bytePackage[1]);
-		return tempByte;
-		
+		tempInt = 0;
+		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));
+		return tempInt;
 	}
 	
 	public long getAmount(byte[] bytePackage){
-		tempByte = 0;
-		tempByte = (byte) (tempByte << 0 | bytePackage[3]);
-		tempByte = (byte) (tempByte << 8 | bytePackage[4]);
-		tempByte = (byte) (tempByte << 16 | bytePackage[5]);
-		tempByte = (byte) (tempByte << 24 | bytePackage[6]);
-		tempByte = (byte) (tempByte << 32 | bytePackage[7]);
-		tempByte = (byte) (tempByte << 40 | bytePackage[8]);
-		tempByte = (byte) (tempByte << 48 | bytePackage[9]);
-		return tempByte;
+		tempLong = 0;
+		tempLong = (tempLong << 8 | (bytePackage[3] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[4] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[5] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[6] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[7] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[8] & 0xFF));
+		tempLong = (tempLong << 8 | (bytePackage[9] & 0xFF));
+		return tempLong;	
 		
 	}
 	
 	public long writeBalance(byte[] bytePackage){
+		tempByte = 0;
 		return tempByte;
 		
 	}
