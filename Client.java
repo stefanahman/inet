@@ -122,7 +122,7 @@ public class Client {
             	case 2: // withrawal
             		System.out.print("securitycode> ");
                 	securitycode = scanner.nextInt();
-                	System.out.print("amount> ");
+                	System.out.print("amount> $");
                 	amount = scanner.nextInt();
             		out.write(cbp.withdrawal(securitycode, amount));
             		out.reset();
@@ -138,7 +138,7 @@ public class Client {
             	case 3: // deposit
             		System.out.print("securitycode> ");
                 	securitycode = scanner.nextInt();
-                	System.out.print("amount> ");
+                	System.out.print("amount> $");
                 	amount = scanner.nextInt();
             		out.write(cbp.deposit(securitycode, amount));
             		out.reset();
