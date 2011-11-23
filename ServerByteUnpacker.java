@@ -47,7 +47,6 @@ public class ServerByteUnpacker {
 		tempLong = (tempLong << 8 | (bytePackage[8] & 0xFF));
 		tempLong = (tempLong << 8 | (bytePackage[9] & 0xFF));
 		return tempLong;	
-		
 	}
 	
 	public long writeBalance(byte[] bytePackage){

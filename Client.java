@@ -10,20 +10,31 @@ public class Client {
 	private static ObjectInputStream in = null;
 	private static String adress = "";
 	
+	private static boolean login = false;
+	
 	private static ClientBytePacker cbp = new ClientBytePacker();
 	private static ClientByteUnpacker cbu = new ClientByteUnpacker();
 	/**
 	 * @param args
 	 */
 	
-	private static boolean checkLogin(byte[] bytePackage) throws IOException{
+	private static int checkStatus(byte[] bytePackage) throws IOException{
 		switch(bytePackage[0]){
 		case 0x00:
-			return true;
+			login = true;
+			return 0;
 		case 0x01:
-			return false;
+			login = false;
+			return 1;
+		case 0x02:
+			System.out.println("Current balance: " + cbu.getBalance(bytePackage));
+			return 2;
+		case 0x03:
+			return 3;
+		case 0x04:
+			return 4;
 		default:
-			return false;
+			return 0;
 		}
 	}
 	
@@ -65,10 +76,10 @@ public class Client {
         out.write(cbp.login(cardnumber, pin));
         out.reset();
         in.read(buffer);
-        
+        checkStatus(buffer);
         // Login done
         
-        if(checkLogin(buffer)){ 
+        if(login){ 
         	while(true){
         		menu();
         		System.out.print("> ");
@@ -77,8 +88,10 @@ public class Client {
             	case 1: // balance
             		out.write(cbp.balance());
             		out.reset();
+            		in.read(buffer);
+            		checkStatus(buffer);
             		break;
-            	case 2: // withraw
+            	case 2: // withrawal
             		System.out.print("securitycode> ");
                 	securitycode = scanner.nextInt();
                 	System.out.print("amount> ");
