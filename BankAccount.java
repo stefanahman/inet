@@ -1,10 +1,10 @@
 
-public class Account {
+public class BankAccount {
 
 	long cardnumber, balance;
 	int pin;
 
-	public Account(long cardnumber, long balance, int pin) {
+	public BankAccount(long cardnumber, long balance, int pin) {
 		this.cardnumber = cardnumber;
 		this.balance = balance;
 		this.pin = pin;
