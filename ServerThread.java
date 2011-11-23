@@ -5,7 +5,7 @@ public class ServerThread extends Thread {
 	private Socket socket = null;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private boolean login = false;
+    private boolean loggedin = false;
     private boolean listening = true;
     private long userCardnumber;
     private int userPin;
@@ -30,11 +30,11 @@ public class ServerThread extends Thread {
 			sleep(2000);
 			if(activeAccount != null){
 				System.out.println("Client '" + userCardnumber + "' connected");
-				login = true;
+				loggedin = true;
 				out.write(sbp.success());
 				out.reset();
 			} else {
-				login = false;
+				loggedin = false;
 				out.write(sbp.failed());
 				out.reset();
 			}
@@ -96,7 +96,7 @@ public class ServerThread extends Thread {
     		
     		
     		// Login done
-    		if(login) {
+    		if(loggedin) {
     			while(listening){
         			in.read(buffer);
         			checkStatus(buffer);
@@ -107,6 +107,9 @@ public class ServerThread extends Thread {
             socket.close();
             System.out.println("Closed thread!");
     	} catch (IOException e){
+    		if(loggedin){
+    			System.out.println("Client '" + userCardnumber + "' disconnected");
+    		}
     		System.out.println("Closed thread!");
             // e.printStackTrace();
         } catch (InterruptedException e) {

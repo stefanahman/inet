@@ -46,6 +46,7 @@ public class Client {
 		System.out.println("(1)Balance");
 		System.out.println("(2)Withdrawal");
 		System.out.println("(3)Deposit");
+		System.out.println("(6)Change language");
 		System.out.println("(7)Exit");
 		System.out.println("---------------------------");
 	}
@@ -149,6 +150,11 @@ public class Client {
             			System.out.println("Successful!");
             		else
             			System.out.println("Unsuccessful!");
+            		anykey();
+            		break;
+            	case 6:
+            		System.out.println("");
+            		System.out.println("Coming soon!");
             		anykey();
             		break;
             	case 7:
