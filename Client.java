@@ -10,7 +10,7 @@ public class Client {
 	private static ObjectInputStream in = null;
 	private static String adress = "";
 	
-	private static boolean login = false;
+	private static boolean success = false;
 	
 	private static ClientBytePacker cbp = new ClientBytePacker();
 	private static ClientByteUnpacker cbu = new ClientByteUnpacker();
@@ -21,10 +21,10 @@ public class Client {
 	private static int checkStatus(byte[] bytePackage) throws IOException{
 		switch(bytePackage[0]){
 		case 0x00:
-			login = true;
+			success = true;
 			return 0;
 		case 0x01:
-			login = false;
+			success = false;
 			return 1;
 		case 0x02:
 			System.out.println("Current balance: " + cbu.getBalance(bytePackage));
@@ -79,7 +79,7 @@ public class Client {
         checkStatus(buffer);
         // Login done
         
-        if(login){ 
+        if(success){ 
         	while(true){
         		menu();
         		System.out.print("> ");
@@ -98,6 +98,12 @@ public class Client {
                 	amount = scanner.nextInt();
             		out.write(cbp.withdrawal(securitycode, amount));
             		out.reset();
+            		in.read(buffer);
+            		checkStatus(buffer);
+            		if(success)
+            			System.out.println("Success");
+            		else
+            			System.out.println("Failed");
             		break;
             	case 3: // deposit
             		System.out.print("securitycode> ");
@@ -106,6 +112,12 @@ public class Client {
                 	amount = scanner.nextInt();
             		out.write(cbp.deposit(securitycode, amount));
             		out.reset();
+            		in.read(buffer);
+            		checkStatus(buffer);
+            		if(success)
+            			System.out.println("Success");
+            		else
+            			System.out.println("Failed");
             		break;
             	case 7:
             		out.write(cbp.exit());

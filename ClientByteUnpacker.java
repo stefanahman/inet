@@ -1,19 +1,12 @@
 
 public class ClientByteUnpacker {
 	
-	
-	private byte tempByte;
 	private long tempLong;
 	
 	public ClientByteUnpacker(){
 		
 	}
 
-	
-	public byte loginCheck(byte[] bytePackage){
-		tempByte = 0;
-		return tempByte;
-	} 
 	
 	public long getBalance(byte[] bytePackage){
 		tempLong = 0; 

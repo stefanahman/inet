@@ -3,13 +3,13 @@ public class ServerBytePacker {
 	
 	byte[] bytePackage = new byte[10];
 	
-	final byte LOGINSUCESS = 0x00;
-	final byte LOGINFAILED = 0x01;
+	final byte SUCCESS = 0x00;
+	final byte FAILED = 0x01;
 	final byte BALANCE = 0x02;
 	final byte EXIT = 0x07;
 	
-	public byte[] loginsucess(){
-		bytePackage[0] = LOGINSUCESS;
+	public byte[] success(){
+		bytePackage[0] = SUCCESS;
 		bytePackage[1] = (byte)(0);
 		bytePackage[2] = (byte)(0);
 		bytePackage[3] = (byte)(0);
@@ -22,8 +22,8 @@ public class ServerBytePacker {
 		return bytePackage;
 	} 
 	
-	public byte[] loginfailed(){
-		bytePackage[0] = LOGINFAILED;
+	public byte[] failed(){
+		bytePackage[0] = FAILED;
 		bytePackage[1] = (byte)(0);
 		bytePackage[2] = (byte)(0);
 		bytePackage[3] = (byte)(0);

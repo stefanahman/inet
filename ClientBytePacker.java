@@ -38,7 +38,7 @@ public class ClientBytePacker {
 	}
 	
 	public byte[] withdrawal(int securityCode, long amount){
-		bytePackage[0] = DEPOSIT;
+		bytePackage[0] = WITHDRAWAL;
 		bytePackage[1] = (byte)(securityCode);
 		bytePackage[2] = (byte)(amount >> 56);
 		bytePackage[3] = (byte)(amount >> 48);
@@ -52,7 +52,7 @@ public class ClientBytePacker {
 	}
 	
 	public byte[] deposit(int securityCode, long amount){
-		bytePackage[0] = WITHDRAWAL;
+		bytePackage[0] = DEPOSIT;
 		bytePackage[1] = (byte)(securityCode);
 		bytePackage[2] = (byte)(amount >> 56);
 		bytePackage[3] = (byte)(amount >> 48);

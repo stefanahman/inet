@@ -28,11 +28,11 @@ public class ServerThread extends Thread {
 			activeAccount = AccountDatabase.login(userCardnumber, userPin);
 			if(activeAccount != null){
 				login = true;
-				out.write(sbp.loginsucess());
+				out.write(sbp.success());
 				out.reset();
 			} else {
 				login = false;
-				out.write(sbp.loginfailed());
+				out.write(sbp.failed());
 				out.reset();
 			}
 			return 0;
@@ -44,14 +44,24 @@ public class ServerThread extends Thread {
 		case 0x02:  // Withrawal
 			securitycode = sbu.getSecurityCode(bytePackage);
 			amount = sbu.getAmount(bytePackage);
-			System.out.println(amount);
-			activeAccount.withdrawal(amount, securitycode);
+			if(activeAccount.withdrawal(amount, securitycode)){
+				out.write(sbp.success());
+				out.reset();
+			} else {
+				out.write(sbp.failed());
+				out.reset();
+			}
 			return 2;
 		case 0x03: // Deposit
 			securitycode = sbu.getSecurityCode(bytePackage);
 			amount = sbu.getAmount(bytePackage);
-			System.out.println(amount);
-			activeAccount.deposit(amount, securitycode);
+			if(activeAccount.deposit(amount, securitycode)){
+				out.write(sbp.success());
+				out.reset();
+			} else {
+				out.write(sbp.failed());
+				out.reset();
+			}
 			return 3;
 		case 0x07:
 			out.write(sbp.exit());
@@ -71,7 +81,6 @@ public class ServerThread extends Thread {
             in = new ObjectInputStream(socket.getInputStream());
                    
             byte[] buffer = new byte[10];
-            int menuOption = 0;
             
     		in.read(buffer);
     		checkStatus(buffer);
@@ -83,7 +92,6 @@ public class ServerThread extends Thread {
             		if(checkStatus(buffer) == 7)
             			break;
         		}
-        		
     		}
             out.close();
             in.close();
