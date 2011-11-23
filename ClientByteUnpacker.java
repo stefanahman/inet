@@ -12,6 +12,6 @@ public class ClientByteUnpacker {
 	public byte loginCheck(byte[] bytePackage){
 		tempByte = 0;
 		return tempByte;
-	}
+	} 
 	
 }

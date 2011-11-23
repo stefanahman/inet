@@ -16,20 +16,22 @@ public class Client {
 	 * @param args
 	 */
 	
-	private static void checkStatus(byte[] bytePackage) throws IOException{
+	private static boolean checkLogin(byte[] bytePackage) throws IOException{
 		switch(bytePackage[0]){
 		case 0x00:
-			System.out.println("Login sucessful!");
-			break;
+			return true;
 		case 0x01:
-			System.out.println("Login failed!");
-			break;
+			return false;
 		default:
-			System.out.println("default");
-			break;
+			return false;
 		}
 	}
-	public static void main(String[] args) throws IOException {
+	
+	private static void menu(){
+		System.out.println("Welcome to Bank! (1)Balance, (2)Withdrawal, (3)Deposit, (7)Exit"); 
+	}
+	
+	public static void main(String[] args) throws IOException, InterruptedException {
         try {
             adress = args[0];
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -51,6 +53,8 @@ public class Client {
         
         byte[] buffer = new byte[10];
         Scanner scanner = new Scanner(System.in);
+        int securitycode;
+        long amount;
         
         System.out.print("cardnumber> ");
         long cardnumber = scanner.nextLong();
@@ -59,18 +63,50 @@ public class Client {
         int pin = scanner.nextInt();
         
         out.write(cbp.login(cardnumber, pin));
+        out.reset();
+        in.read(buffer);
         
-
-        in.read(buffer,0,10);
-        System.out.println("innan");
-        checkStatus(buffer);
-        System.out.println("efter");
-        int i = 0;
+        // Login done
         
-        while(i != 1){
-
-    		
+        if(checkLogin(buffer)){ 
+        	while(true){
+        		menu();
+        		System.out.print("> ");
+            	int menuOption = scanner.nextInt();
+            	switch(menuOption){
+            	case 1: // balance
+            		out.write(cbp.balance());
+            		out.reset();
+            		break;
+            	case 2: // withraw
+            		System.out.print("securitycode> ");
+                	securitycode = scanner.nextInt();
+                	System.out.print("amount> ");
+                	amount = scanner.nextInt();
+            		out.write(cbp.withdrawal(securitycode, amount));
+            		out.reset();
+            		break;
+            	case 3: // deposit
+            		System.out.print("securitycode> ");
+                	securitycode = scanner.nextInt();
+                	System.out.print("amount> ");
+                	amount = scanner.nextInt();
+            		out.write(cbp.deposit(securitycode, amount));
+            		out.reset();
+            		break;
+            	case 7:
+            		out.write(cbp.exit());
+            		out.reset();
+            		break;
+            	} 
+            	if(menuOption == 7)
+        			break;
+            }
+        } else {
+        	System.out.println("Wrong login.");
         }
+        System.out.println("Good bye!");
+
         out.close();
         in.close();
         socket.close();

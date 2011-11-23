@@ -38,7 +38,7 @@ public class ServerByteUnpacker {
 	}
 	
 	public long getAmount(byte[] bytePackage){
-		tempLong = 0;
+		tempLong = 0; 
 		tempLong = (tempLong << 8 | (bytePackage[3] & 0xFF));
 		tempLong = (tempLong << 8 | (bytePackage[4] & 0xFF));
 		tempLong = (tempLong << 8 | (bytePackage[5] & 0xFF));

@@ -6,6 +6,8 @@ public class ServerThread extends Thread {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private long[] returnArray;
+    public static int menuOption = 0;
+    private boolean login = false;
 	
 	private ServerByteUnpacker sbu = new ServerByteUnpacker();
 	private ServerBytePacker sbp = new ServerBytePacker();
@@ -14,49 +16,50 @@ public class ServerThread extends Thread {
         this.socket = socket;
     }
     
-
-    private void checkStatus(byte[] bytePackage) throws IOException{
+    private int checkStatus(byte[] bytePackage) throws IOException{
 		switch(bytePackage[0]){
 		case 0x00:
 			returnArray = new long[2];
 			returnArray[0] = sbu.loginGetCardNumber(bytePackage);
 			returnArray[1] = sbu.loginGetPin(bytePackage);
 			if(validateUser(returnArray[0], returnArray[1])){
-				System.out.println("s");
-				out.flush();
+				login = true;
 				out.write(sbp.loginsucess());
+				out.reset();
 			} else {
-				System.out.println("f");
-				out.flush();
+				login = false;
 				out.write(sbp.loginfailed());
+				out.reset();
 			}
-			
-			break;
-		case 0x01: 
+			return (menuOption = 0);
+		case 0x01:
 			returnArray[0] = sbu.writeBalance(bytePackage);
-			System.out.println("Balance:");
 			System.out.println(returnArray[0]);
-			break;
+			return (menuOption = 1);
 		case 0x02: 
 			returnArray[0] = sbu.getSecurityCode(bytePackage);
 			returnArray[1] = sbu.getAmount(bytePackage);
-			System.out.println("Withraw:");
+			System.out.print("sc> ");
 			System.out.println(returnArray[0]);
+			System.out.print("am> ");
 			System.out.println(returnArray[1]);
-			break;
-		case 0x03: 
+			return (menuOption = 2);
+		case 0x03:
 			returnArray[0] = sbu.getSecurityCode(bytePackage);
 			returnArray[1] = sbu.getAmount(bytePackage);
-			System.out.println("Deposit:");
+			System.out.print("sc> ");
 			System.out.println(returnArray[0]);
+			System.out.print("am> ");
 			System.out.println(returnArray[1]);
-			break;
+			return (menuOption = 3);
+		case 0x07:
+			return (menuOption = 7);
 		default:
-			break;
+			return (menuOption = 0);
 		}
 		
 	}
-    
+     
     private boolean validateSecurityCode(int userCode) {
         return ((userCode < 100) && (userCode > 0) && (userCode % 2 != 0));
     }
@@ -88,25 +91,42 @@ public class ServerThread extends Thread {
             in = new ObjectInputStream(socket.getInputStream());
                    
             byte[] buffer = new byte[10];
-
-    		in.read(buffer,0,10);
-    		
-    		checkStatus(buffer);
-    		
-    		in.read(buffer,0,10);
-    		
-    		checkStatus(buffer);
-        	
-        	int i = 0;
+            int menuOption = 0;
             
-            while(i != 1){
-
+    		in.read(buffer);
+    		checkStatus(buffer);
+    		
+    		// Login done
+    		
+    		if(login) {
+    			System.out.println("Client connected, thread opened");
+    			while(true){
+        			in.read(buffer);
+        			menuOption = checkStatus(buffer);
+            		switch(menuOption){
+                	case 1:
+                		System.out.println("Balance");
+                		break;
+                	case 2:
+                		System.out.println("Withraw");
+                		break;
+                	case 3:
+                		System.out.println("Deposit");
+                		break;
+                	case 7:
+                		out.write(sbp.exit());
+                		out.reset();
+                		break;
+                	}
+            		if(menuOption == 7)
+            			break;
+        		}
         		
-            }
-            
+    		}
             out.close();
             in.close();
             socket.close();
+            System.out.println("Closed thread!");
     	} catch (IOException e){
             e.printStackTrace();
         }
