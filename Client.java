@@ -10,7 +10,8 @@ public class Client {
 	private static ObjectInputStream in = null;
 	private static String adress = "";
 	
-	private static boolean success = false;
+	private static boolean verification = false;
+	private static Scanner scanner = new Scanner(System.in);
 	
 	private static ClientBytePacker cbp = new ClientBytePacker();
 	private static ClientByteUnpacker cbu = new ClientByteUnpacker();
@@ -21,13 +22,13 @@ public class Client {
 	private static int checkStatus(byte[] bytePackage) throws IOException{
 		switch(bytePackage[0]){
 		case 0x00:
-			success = true;
+			verification = true;
 			return 0;
 		case 0x01:
-			success = false;
+			verification = false;
 			return 1;
 		case 0x02:
-			System.out.println("Current balance: " + cbu.getBalance(bytePackage));
+			System.out.println("Account: $" + cbu.getBalance(bytePackage));
 			return 2;
 		case 0x03:
 			return 3;
@@ -39,7 +40,21 @@ public class Client {
 	}
 	
 	private static void menu(){
-		System.out.println("Welcome to Bank! (1)Balance, (2)Withdrawal, (3)Deposit, (7)Exit"); 
+		System.out.println("");
+		System.out.println("What would you like to do?");
+		System.out.println("---------------------------");
+		System.out.println("(1)Balance");
+		System.out.println("(2)Withdrawal");
+		System.out.println("(3)Deposit");
+		System.out.println("(7)Exit");
+		System.out.println("---------------------------");
+	}
+	
+	private static void anykey(){
+		System.out.println("");
+		System.out.println("Press any key to continue..");
+		scanner.nextLine();
+		scanner.nextLine();
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -60,12 +75,17 @@ public class Client {
             System.err.println("Couldn't open connection to " + adress);
             System.exit(1);
         }
-        System.out.println("Contacting bank ... ");
+        
+        System.out.println("--------------------------");
+        System.out.println("Welcome to iBank ");
+        System.out.println("--------------------------");
+        System.out.println("");
         
         byte[] buffer = new byte[10];
-        Scanner scanner = new Scanner(System.in);
+        
         int securitycode;
         long amount;
+        int menuOption;
         
         System.out.print("cardnumber> ");
         long cardnumber = scanner.nextLong();
@@ -75,21 +95,29 @@ public class Client {
         
         out.write(cbp.login(cardnumber, pin));
         out.reset();
+        System.out.println("");
+        System.out.print("Verificating login ... ");
+        
         in.read(buffer);
+        
         checkStatus(buffer);
         // Login done
         
-        if(success){ 
+        if(verification){
+        	System.out.println("Valid!");
         	while(true){
         		menu();
         		System.out.print("> ");
-            	int menuOption = scanner.nextInt();
+            	menuOption = scanner.nextInt();
+            	System.out.println("");
             	switch(menuOption){
             	case 1: // balance
             		out.write(cbp.balance());
             		out.reset();
+            		System.out.println("Receiving balance ...");
             		in.read(buffer);
             		checkStatus(buffer);
+            		anykey();
             		break;
             	case 2: // withrawal
             		System.out.print("securitycode> ");
@@ -98,12 +126,14 @@ public class Client {
                 	amount = scanner.nextInt();
             		out.write(cbp.withdrawal(securitycode, amount));
             		out.reset();
+            		System.out.print("Verificating ... ");
             		in.read(buffer);
             		checkStatus(buffer);
-            		if(success)
-            			System.out.println("Success");
+            		if(verification)
+            			System.out.println("Successful!");
             		else
-            			System.out.println("Failed");
+            			System.out.println("Unsuccessful!");
+            		anykey();
             		break;
             	case 3: // deposit
             		System.out.print("securitycode> ");
@@ -112,12 +142,14 @@ public class Client {
                 	amount = scanner.nextInt();
             		out.write(cbp.deposit(securitycode, amount));
             		out.reset();
+            		System.out.print("Verificating ... ");
             		in.read(buffer);
             		checkStatus(buffer);
-            		if(success)
-            			System.out.println("Success");
+            		if(verification)
+            			System.out.println("Successful!");
             		else
-            			System.out.println("Failed");
+            			System.out.println("Unsuccessful!");
+            		anykey();
             		break;
             	case 7:
             		out.write(cbp.exit());
@@ -128,7 +160,7 @@ public class Client {
         			break;
             }
         } else {
-        	System.out.println("Wrong login.");
+        	System.out.println("Invalid.");
         }
         System.out.println("Good bye!");
 

@@ -6,6 +6,7 @@ public class ServerThread extends Thread {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private boolean login = false;
+    private boolean listening = true;
     private long userCardnumber;
     private int userPin;
     private int securitycode;
@@ -15,18 +16,20 @@ public class ServerThread extends Thread {
 	
 	private ServerByteUnpacker sbu = new ServerByteUnpacker();
 	private ServerBytePacker sbp = new ServerBytePacker();
-    public ServerThread(Socket socket) {
+    public ServerThread(Socket socket) throws SocketException {
         super("ServerThread");
         this.socket = socket;
     }
     
-    private int checkStatus(byte[] bytePackage) throws IOException{
+    private void checkStatus(byte[] bytePackage) throws IOException, InterruptedException{
 		switch(bytePackage[0]){
 		case 0x00:
 			userCardnumber = sbu.loginGetCardNumber(bytePackage);
 			userPin = sbu.loginGetPin(bytePackage);
 			activeAccount = AccountDatabase.login(userCardnumber, userPin);
+			sleep(2000);
 			if(activeAccount != null){
+				System.out.println("Client '" + userCardnumber + "' connected");
 				login = true;
 				out.write(sbp.success());
 				out.reset();
@@ -35,15 +38,18 @@ public class ServerThread extends Thread {
 				out.write(sbp.failed());
 				out.reset();
 			}
-			return 0;
+			break;
 		case 0x01: // Balance
+			sleep(2000);
 			balance = activeAccount.getBalance();
 			out.write(sbp.balance(balance));
 			out.reset();
-			return 1;
+			
+			break;
 		case 0x02:  // Withrawal
 			securitycode = sbu.getSecurityCode(bytePackage);
 			amount = sbu.getAmount(bytePackage);
+			sleep(2000);
 			if(activeAccount.withdrawal(amount, securitycode)){
 				out.write(sbp.success());
 				out.reset();
@@ -51,10 +57,11 @@ public class ServerThread extends Thread {
 				out.write(sbp.failed());
 				out.reset();
 			}
-			return 2;
+			break;
 		case 0x03: // Deposit
 			securitycode = sbu.getSecurityCode(bytePackage);
 			amount = sbu.getAmount(bytePackage);
+			sleep(2000);
 			if(activeAccount.deposit(amount, securitycode)){
 				out.write(sbp.success());
 				out.reset();
@@ -62,14 +69,16 @@ public class ServerThread extends Thread {
 				out.write(sbp.failed());
 				out.reset();
 			}
-			return 3;
+			break;
 		case 0x07:
 			out.write(sbp.exit());
     		out.reset();
 			AccountDatabase.logout(activeAccount);
-			return 7;
+			System.out.println("Client '" + userCardnumber + "' disconnected");
+			listening = false;
+			break;
 		default:
-			return 0;
+			break;
 		}
 		
 	}
@@ -81,16 +90,16 @@ public class ServerThread extends Thread {
             in = new ObjectInputStream(socket.getInputStream());
                    
             byte[] buffer = new byte[10];
-            
+            System.out.println("Thread opened!");
     		in.read(buffer);
     		checkStatus(buffer);
-    		System.out.println("Client connected, thread opened");
+    		
+    		
     		// Login done
     		if(login) {
-    			while(true){
+    			while(listening){
         			in.read(buffer);
-            		if(checkStatus(buffer) == 7)
-            			break;
+        			checkStatus(buffer);
         		}
     		}
             out.close();
@@ -98,7 +107,11 @@ public class ServerThread extends Thread {
             socket.close();
             System.out.println("Closed thread!");
     	} catch (IOException e){
-            e.printStackTrace();
-        }
+    		System.out.println("Closed thread!");
+            // e.printStackTrace();
+        } catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }
