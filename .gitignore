@@ -1,6 +1,2 @@
 
-Server.class
-
-Client.class
-
-ClientBytePacker.class
+*.class
