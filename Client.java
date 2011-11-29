@@ -10,7 +10,6 @@ public class Client {
 	private static ObjectInputStream in = null;
 	private static String adress = "";
 	private static Language lang = new Language();
-	private static Langpacks packs = new Langpacks();
 	
 	private static boolean verification = false;
 	private static Scanner scanner = new Scanner(System.in);
@@ -60,7 +59,20 @@ public class Client {
 		scanner.nextLine();
 	}
 	
-	public static void main(String[] args) throws IOException, InterruptedException {
+	private static byte[] read(byte[] buffer) throws IOException {
+		int expectedSize, size;
+		in.read(buffer); // read header
+		
+		expectedSize = (int) buffer[0];
+		size = in.read(buffer);
+		
+		if(size == expectedSize)
+			return buffer;
+		else
+			return null;
+	}
+	
+	public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         try {
             adress = args[0];
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -90,20 +102,22 @@ public class Client {
         long amount;
         int menuOption;
         
+        
+        
         System.out.print(lang.cardnumber);
         long cardnumber = scanner.nextLong();
         
         System.out.print(lang.pin);
         int pin = scanner.nextInt();
         
+        out.write(cbp.header((byte) 10));
+        out.reset();
         out.write(cbp.login(cardnumber, pin));
         out.reset();
         System.out.println("");
         System.out.print(lang.verificate);
         
-        in.read(buffer);
-        
-        checkStatus(buffer);
+        checkStatus(read(buffer));
         // Login done
         
         if(verification){
@@ -118,8 +132,9 @@ public class Client {
             		out.write(cbp.balance());
             		out.reset();
             		System.out.println(lang.receivingBalance);
-            		in.read(buffer);
-            		checkStatus(buffer);
+            		
+            		checkStatus(read(buffer));
+            		
             		anykey();
             		break;
             	case 2: // withrawal
@@ -127,11 +142,15 @@ public class Client {
                 	securitycode = scanner.nextInt();
                 	System.out.print(lang.amount + " $");
                 	amount = scanner.nextInt();
+                	
+                	out.write(cbp.header((byte) 10));
+                    out.reset();
             		out.write(cbp.withdrawal(securitycode, amount));
             		out.reset();
             		System.out.print(lang.verificate);
-            		in.read(buffer);
-            		checkStatus(buffer);
+            		
+            		checkStatus(read(buffer));
+            		
             		if(verification)
             			System.out.println(lang.successful);
             		else
@@ -143,11 +162,16 @@ public class Client {
                 	securitycode = scanner.nextInt();
                 	System.out.print(lang.amount + " $");
                 	amount = scanner.nextInt();
+                	
+                	out.write(cbp.header((byte) 10));
+                    out.reset();
             		out.write(cbp.deposit(securitycode, amount));
             		out.reset();
+            		
             		System.out.print(lang.verificate);
-            		in.read(buffer);
-            		checkStatus(buffer);
+            		
+            		checkStatus(read(buffer));
+            		
             		if(verification)
             			System.out.println(lang.successful);
             		else
@@ -155,8 +179,19 @@ public class Client {
             		anykey();
             		break;
             	case 6:
-            		System.out.println("");
-            		lang.updateLanguage(packs.getSwedish());
+            		System.out.println(lang.sv_se);
+            		System.out.println(lang.en_us);
+            		int langOpt = scanner.nextInt();
+            		if(langOpt > 0 && langOpt < 3) {
+            			out.write(cbp.header((byte) 2));
+                    	out.reset();
+            			out.write(cbp.setLang(langOpt));
+                    	out.reset();
+                    	
+                    	String[] bufferLang = (String[]) in.readObject();
+                    	lang.updateLanguage(bufferLang);
+            		} else 
+            			System.out.println(lang.invalid);
             		anykey();
             		break;
             	case 7:

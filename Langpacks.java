@@ -1,8 +1,8 @@
 // Class for server to create langpacks
 public class Langpacks {
 
-	String[] swedish = new String[23];
-	String[] english = new String[23];
+	String[] swedish = new String[25];
+	String[] english = new String[25];
 	
 	public Langpacks(){
 	}
@@ -12,7 +12,7 @@ public class Langpacks {
 		swedish[1] = "(1)Balans";
 		swedish[2] = "(2)Uttag";
 		swedish[3] = "(3)Insattning";
-		swedish[4] = "(6)Change language";
+		swedish[4] = "(6)Andra sprak";
 		swedish[5] = "(7)Exit";
 		swedish[6] = "Tryck pa valfri tangent";
 		swedish[7] = "Argument for ip saknas";
@@ -31,6 +31,8 @@ public class Langpacks {
 		swedish[20] = "Misslyckades!";
 		swedish[21] = "Hejda!";
 		swedish[22] = "Konto";
+		swedish[23] = "Svenska";
+		swedish[24] = "Engelska (US)";
 		return swedish;
 	}
 	public String[] getEnglish() {
@@ -58,6 +60,8 @@ public class Langpacks {
 		english[20] = "Unsuccessful!";
 		english[21] = "Good bye!";
 		english[22] = "Account";
+		english[23] = "Swedish";
+		english[24] = "English (US)";
 		return english;
 	}
 }

@@ -55,4 +55,10 @@ public class ServerByteUnpacker {
 		
 	}
 	
+	public int getLanguage(byte[] bytePackage){
+		tempInt = 0;
+		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));
+		return tempInt;
+	}
+	
 }

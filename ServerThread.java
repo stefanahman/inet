@@ -10,9 +10,12 @@ public class ServerThread extends Thread {
     private long userCardnumber;
     private int userPin;
     private int securitycode;
+    private int language;
     private long amount;
     private long balance;
     private BankAccount activeAccount;
+    
+    private static Langpacks packs = new Langpacks();
 	
 	private ServerByteUnpacker sbu = new ServerByteUnpacker();
 	private ServerBytePacker sbp = new ServerBytePacker();
@@ -27,26 +30,26 @@ public class ServerThread extends Thread {
 			userCardnumber = sbu.loginGetCardNumber(bytePackage);
 			userPin = sbu.loginGetPin(bytePackage);
 			activeAccount = AccountDatabase.login(userCardnumber, userPin);
-			sleep(2000);
+			//sleep(2000);
 			if(activeAccount != null){
 				System.out.println("Client '" + userCardnumber + "' connected");
 				loggedin = true;
-				out.write(sbp.header((byte) 0x01));
+				out.write(sbp.header((byte) 1));
 				out.reset();
 				out.write(sbp.success());
 				out.reset();
 			} else {
 				loggedin = false;
-				out.write(sbp.header((byte) 0x01));
+				out.write(sbp.header((byte) 1));
 				out.reset();
 				out.write(sbp.failed());
 				out.reset();
 			}
 			break;
 		case 0x01: // Balance
-			sleep(2000);
+			//sleep(2000);
 			balance = activeAccount.getBalance();
-			out.write(sbp.header((byte) 0xA));
+			out.write(sbp.header((byte) 10));
 			out.reset();
 			out.write(sbp.balance(balance));
 			out.reset();
@@ -55,14 +58,14 @@ public class ServerThread extends Thread {
 		case 0x02:  // Withrawal
 			securitycode = sbu.getSecurityCode(bytePackage);
 			amount = sbu.getAmount(bytePackage);
-			sleep(2000);
+			//sleep(2000);
 			if(activeAccount.withdrawal(amount, securitycode)){
-				out.write(sbp.header((byte) 0x01));
+				out.write(sbp.header((byte) 1));
 				out.reset();
 				out.write(sbp.success());
 				out.reset();
 			} else {
-				out.write(sbp.header((byte) 0x01));
+				out.write(sbp.header((byte) 1));
 				out.reset();
 				out.write(sbp.failed());
 				out.reset();
@@ -71,21 +74,35 @@ public class ServerThread extends Thread {
 		case 0x03: // Deposit
 			securitycode = sbu.getSecurityCode(bytePackage);
 			amount = sbu.getAmount(bytePackage);
-			sleep(2000);
+			//sleep(2000);
 			if(activeAccount.deposit(amount, securitycode)){
-				out.write(sbp.header((byte) 0x01));
+				out.write(sbp.header((byte) 1));
 				out.reset();
 				out.write(sbp.success());
 				out.reset();
 			} else {
-				out.write(sbp.header((byte) 0x01));
+				out.write(sbp.header((byte) 1));
 				out.reset();
 				out.write(sbp.failed());
 				out.reset();
 			}
 			break;
+		case 0x04:
+			language = sbu.getLanguage(bytePackage);
+			System.out.println("language " + language);
+			switch(language){
+			case 1: 
+				out.writeObject(packs.getSwedish());
+				out.reset();
+				break;
+			case 2: 
+				out.writeObject(packs.getEnglish()); 
+				out.reset(); 
+				break;
+			}
+			break;
 		case 0x07:
-			out.write(sbp.header((byte) 0x01));
+			out.write(sbp.header((byte) 1));
 			out.reset();
 			out.write(sbp.exit());
     		out.reset();
@@ -99,6 +116,19 @@ public class ServerThread extends Thread {
 		
 	}
     
+    private byte[] read(byte[] buffer) throws IOException {
+		int expectedSize, size;
+		in.read(buffer); // read header
+		
+		expectedSize = (int) buffer[0];
+		size = in.read(buffer);
+		
+		if(size == expectedSize)
+			return buffer;
+		else
+			return null;
+	}
+    
     public void run(){
 		
     	try {
@@ -107,15 +137,12 @@ public class ServerThread extends Thread {
                    
             byte[] buffer = new byte[10];
             System.out.println("Thread opened!");
-    		in.read(buffer);
-    		checkStatus(buffer);
-    		
+    		checkStatus(read(buffer));
     		
     		// Login done
     		if(loggedin) {
     			while(listening){
-        			in.read(buffer);
-        			checkStatus(buffer);
+    				checkStatus(read(buffer));
         		}
     		}
             out.close();

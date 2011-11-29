@@ -25,6 +25,8 @@ public class Language {
 	public String unsuccessful = "Unsuccessful!";
 	public String goodBye = "Good bye!";
 	public String account = "Account";
+	public String sv_se = "Swedish";
+	public String en_us = "English (US)";
 
 	public Language(){
 	}
@@ -53,6 +55,8 @@ public class Language {
 		this.unsuccessful = pack[20];
 		this.goodBye = pack[21];
 		this.account = pack[22];
+		this.sv_se = pack[23];
+		this.en_us = pack[24];
 
 	}
 }

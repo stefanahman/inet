@@ -2,13 +2,20 @@
 public class ClientBytePacker {
 	
 	byte[] bytePackage1 = new byte[1];
+	byte[] bytePackage2 = new byte[2];
 	byte[] bytePackage10 = new byte[10];
 	
 	final byte LOGIN = 0x00;
 	final byte BALANCE = 0x01;
 	final byte WITHDRAWAL = 0x02;
 	final byte DEPOSIT = 0x03;
+	final byte LANGUAGE = 0x04;
 	final byte EXIT = 0x07;
+	
+	public byte[] header(byte size){
+		bytePackage1[0] = size;
+		return bytePackage1;
+	}
 	
 	public byte[] login(long cardnumber, int pin){
 		bytePackage10[0] = LOGIN;
@@ -21,7 +28,7 @@ public class ClientBytePacker {
 		bytePackage10[7] = (byte)(cardnumber >> 16);
 		bytePackage10[8] = (byte)(cardnumber >> 8);
 		bytePackage10[9] = (byte)(cardnumber >> 0);
-		return bytePackage10;	
+		return bytePackage10;
 	}
 	
 	public byte[] balance(){
@@ -55,6 +62,12 @@ public class ClientBytePacker {
 		bytePackage10[8] = (byte)(amount >> 8);
 		bytePackage10[9] = (byte)(amount >> 0);
 		return bytePackage10;	
+	}
+	
+	public byte[] setLang(int lang){
+		bytePackage2[0] = LANGUAGE;
+		bytePackage2[1] = (byte) lang;
+		return bytePackage2;
 	}
 	 
 	public byte[] exit(){
