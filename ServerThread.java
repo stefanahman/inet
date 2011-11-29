@@ -100,7 +100,7 @@ public class ServerThread extends Thread {
 				out.reset(); 
 				break;
 			}
-			break;
+			break; 
 		case 0x07:
 			out.write(sbp.header((byte) 1));
 			out.reset();
