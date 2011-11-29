@@ -31,10 +31,14 @@ public class ServerThread extends Thread {
 			if(activeAccount != null){
 				System.out.println("Client '" + userCardnumber + "' connected");
 				loggedin = true;
+				out.write(sbp.header((byte) 0x01));
+				out.reset();
 				out.write(sbp.success());
 				out.reset();
 			} else {
 				loggedin = false;
+				out.write(sbp.header((byte) 0x01));
+				out.reset();
 				out.write(sbp.failed());
 				out.reset();
 			}
@@ -42,6 +46,8 @@ public class ServerThread extends Thread {
 		case 0x01: // Balance
 			sleep(2000);
 			balance = activeAccount.getBalance();
+			out.write(sbp.header((byte) 0xA));
+			out.reset();
 			out.write(sbp.balance(balance));
 			out.reset();
 			
@@ -51,9 +57,13 @@ public class ServerThread extends Thread {
 			amount = sbu.getAmount(bytePackage);
 			sleep(2000);
 			if(activeAccount.withdrawal(amount, securitycode)){
+				out.write(sbp.header((byte) 0x01));
+				out.reset();
 				out.write(sbp.success());
 				out.reset();
 			} else {
+				out.write(sbp.header((byte) 0x01));
+				out.reset();
 				out.write(sbp.failed());
 				out.reset();
 			}
@@ -63,14 +73,20 @@ public class ServerThread extends Thread {
 			amount = sbu.getAmount(bytePackage);
 			sleep(2000);
 			if(activeAccount.deposit(amount, securitycode)){
+				out.write(sbp.header((byte) 0x01));
+				out.reset();
 				out.write(sbp.success());
 				out.reset();
 			} else {
+				out.write(sbp.header((byte) 0x01));
+				out.reset();
 				out.write(sbp.failed());
 				out.reset();
 			}
 			break;
 		case 0x07:
+			out.write(sbp.header((byte) 0x01));
+			out.reset();
 			out.write(sbp.exit());
     		out.reset();
 			AccountDatabase.logout(activeAccount);

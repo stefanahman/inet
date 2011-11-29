@@ -9,6 +9,11 @@ public class ServerBytePacker {
 	final byte BALANCE = 0x02;
 	final byte EXIT = 0x07;
 	
+	public byte[] header(byte size){
+		bytePackage1[0] = size;
+		return bytePackage1;
+	}
+	
 	public byte[] success(){
 		bytePackage1[0] = SUCCESS;
 		return bytePackage1;
