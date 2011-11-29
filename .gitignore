@@ -13,3 +13,5 @@ ServerBytePacker.class
 Server.class
 
 Client.class
+
+ServerThread.class

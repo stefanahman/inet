@@ -145,6 +145,7 @@ public class ServerThread extends Thread {
     				checkStatus(read(buffer));
         		}
     		}
+    		
             out.close();
             in.close();
             socket.close();
