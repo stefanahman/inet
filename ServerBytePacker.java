@@ -1,30 +1,31 @@
 
 public class ServerBytePacker {
 	
-	byte[] bytePackage1 = new byte[1];
-	byte[] bytePackage10 = new byte[10];
-	
 	final byte SUCCESS = 0x00;
 	final byte FAILED = 0x01;
 	final byte BALANCE = 0x02;
 	final byte EXIT = 0x07;
 	
 	public byte[] header(byte size){
+		byte[] bytePackage1 = new byte[1];
 		bytePackage1[0] = size;
 		return bytePackage1;
 	}
 	
 	public byte[] success(){
+		byte[] bytePackage1 = new byte[1];
 		bytePackage1[0] = SUCCESS;
 		return bytePackage1;
 	} 
 	
 	public byte[] failed(){
+		byte[] bytePackage1 = new byte[1];
 		bytePackage1[0] = FAILED;
 		return bytePackage1;
 	}
 	
 	public byte[] balance(long balance){
+		byte[] bytePackage10 = new byte[10];
 		bytePackage10[0] = BALANCE;
 		bytePackage10[1] = (byte)(balance >> 64);
 		bytePackage10[2] = (byte)(balance >> 56);
@@ -39,6 +40,7 @@ public class ServerBytePacker {
 	}
 	
 	public byte[] exit(){
+		byte[] bytePackage1 = new byte[1];
 		bytePackage1[0] = EXIT;
 		return bytePackage1;
 	}

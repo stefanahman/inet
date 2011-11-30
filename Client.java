@@ -20,23 +20,23 @@ public class Client {
 	 * @param args
 	 */
 	
-	private static int checkStatus(byte[] bytePackage) throws IOException{
+	private static void checkStatus(byte[] bytePackage) throws IOException{
 		switch(bytePackage[0]){
 		case 0x00:
 			verification = true;
-			return 0;
+			break;
 		case 0x01:
 			verification = false;
-			return 1;
+			break;
 		case 0x02:
 			System.out.println(lang.account + ": $" + cbu.getBalance(bytePackage));
-			return 2;
+			break;
 		case 0x03:
-			return 3;
+			break;
 		case 0x04:
-			return 4;
+			break;
 		default:
-			return 0;
+			break;
 		}
 	}
 	
@@ -59,7 +59,7 @@ public class Client {
 		scanner.nextLine();
 	}
 	
-	private static byte[] read(byte[] buffer) throws IOException {
+	private static void read(byte[] buffer) throws IOException {
 		int expectedSize, size;
 		in.read(buffer); // read header
 		
@@ -67,9 +67,14 @@ public class Client {
 		size = in.read(buffer);
 		
 		if(size == expectedSize)
-			return buffer;
-		else
-			return null;
+			checkStatus(buffer);
+	}
+	
+	private static void write(int size, byte[] pack) throws IOException {
+		out.write(cbp.header((byte) size));
+		out.reset();
+		out.write(pack);
+		out.reset();
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
@@ -102,22 +107,17 @@ public class Client {
         long amount;
         int menuOption;
         
-        
-        
         System.out.print(lang.cardnumber);
         long cardnumber = scanner.nextLong();
         
         System.out.print(lang.pin);
         int pin = scanner.nextInt();
         
-        out.write(cbp.header((byte) 10));
-        out.reset();
-        out.write(cbp.login(cardnumber, pin));
-        out.reset();
+        write(10,cbp.login(cardnumber, pin));
         System.out.println("");
         System.out.print(lang.verificate);
         
-        checkStatus(read(buffer));
+        read(buffer);
         // Login done
         
         if(verification){
@@ -129,12 +129,9 @@ public class Client {
             	System.out.println("");
             	switch(menuOption){
             	case 1: // balance
-            		out.write(cbp.balance());
-            		out.reset();
+            		write(1,cbp.balance());
             		System.out.println(lang.receivingBalance);
-            		
-            		checkStatus(read(buffer));
-            		
+            		read(buffer);
             		anykey();
             		break;
             	case 2: // withrawal
@@ -142,14 +139,9 @@ public class Client {
                 	securitycode = scanner.nextInt();
                 	System.out.print(lang.amount + " $");
                 	amount = scanner.nextInt();
-                	
-                	out.write(cbp.header((byte) 10));
-                    out.reset();
-            		out.write(cbp.withdrawal(securitycode, amount));
-            		out.reset();
+            		write(10,cbp.withdrawal(securitycode, amount));
             		System.out.print(lang.verificate);
-            		
-            		checkStatus(read(buffer));
+            		read(buffer);
             		
             		if(verification)
             			System.out.println(lang.successful);
@@ -162,15 +154,9 @@ public class Client {
                 	securitycode = scanner.nextInt();
                 	System.out.print(lang.amount + " $");
                 	amount = scanner.nextInt();
-                	
-                	out.write(cbp.header((byte) 10));
-                    out.reset();
-            		out.write(cbp.deposit(securitycode, amount));
-            		out.reset();
-            		
+            		write(10,cbp.deposit(securitycode, amount));
             		System.out.print(lang.verificate);
-            		
-            		checkStatus(read(buffer));
+            		read(buffer);
             		
             		if(verification)
             			System.out.println(lang.successful);
@@ -183,11 +169,7 @@ public class Client {
             		System.out.println(lang.en_us);
             		int langOpt = scanner.nextInt();
             		if(langOpt > 0 && langOpt < 3) {
-            			out.write(cbp.header((byte) 2));
-                    	out.reset();
-            			out.write(cbp.setLang(langOpt));
-                    	out.reset();
-                    	
+                    	write(2,cbp.setLang(langOpt));
                     	String[] bufferLang = (String[]) in.readObject();
                     	lang.updateLanguage(bufferLang);
             		} else 
@@ -195,8 +177,7 @@ public class Client {
             		anykey();
             		break;
             	case 7:
-            		out.write(cbp.exit());
-            		out.reset();
+            		write(1,cbp.exit());
             		break;
             	} 
             	if(menuOption == 7)
@@ -206,7 +187,6 @@ public class Client {
         	System.out.println(lang.invalid);
         }
         System.out.println(lang.goodBye);
-
         out.close();
         in.close();
         socket.close();

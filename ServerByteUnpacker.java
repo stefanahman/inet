@@ -52,7 +52,6 @@ public class ServerByteUnpacker {
 	public long writeBalance(byte[] bytePackage){
 		tempByte = 0;
 		return tempByte;
-		
 	}
 	
 	public int getLanguage(byte[] bytePackage){

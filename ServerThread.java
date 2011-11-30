@@ -25,7 +25,7 @@ public class ServerThread extends Thread {
     }
     
     private void checkStatus(byte[] bytePackage) throws IOException, InterruptedException{
-		switch(bytePackage[0]){
+    	switch(bytePackage[0]){
 		case 0x00:
 			userCardnumber = sbu.loginGetCardNumber(bytePackage);
 			userPin = sbu.loginGetPin(bytePackage);
@@ -34,25 +34,16 @@ public class ServerThread extends Thread {
 			if(activeAccount != null){
 				System.out.println("Client '" + userCardnumber + "' connected");
 				loggedin = true;
-				out.write(sbp.header((byte) 1));
-				out.reset();
-				out.write(sbp.success());
-				out.reset();
+				write(1,sbp.success());
 			} else {
 				loggedin = false;
-				out.write(sbp.header((byte) 1));
-				out.reset();
-				out.write(sbp.failed());
-				out.reset();
+				write(1,sbp.failed());
 			}
 			break;
 		case 0x01: // Balance
 			//sleep(2000);
 			balance = activeAccount.getBalance();
-			out.write(sbp.header((byte) 10));
-			out.reset();
-			out.write(sbp.balance(balance));
-			out.reset();
+			write(10,sbp.balance(balance));
 			
 			break;
 		case 0x02:  // Withrawal
@@ -60,15 +51,9 @@ public class ServerThread extends Thread {
 			amount = sbu.getAmount(bytePackage);
 			//sleep(2000);
 			if(activeAccount.withdrawal(amount, securitycode)){
-				out.write(sbp.header((byte) 1));
-				out.reset();
-				out.write(sbp.success());
-				out.reset();
+				write(1,sbp.success());
 			} else {
-				out.write(sbp.header((byte) 1));
-				out.reset();
-				out.write(sbp.failed());
-				out.reset();
+				write(1,sbp.failed());
 			}
 			break;
 		case 0x03: // Deposit
@@ -76,20 +61,13 @@ public class ServerThread extends Thread {
 			amount = sbu.getAmount(bytePackage);
 			//sleep(2000);
 			if(activeAccount.deposit(amount, securitycode)){
-				out.write(sbp.header((byte) 1));
-				out.reset();
-				out.write(sbp.success());
-				out.reset();
+				write(1,sbp.success());
 			} else {
-				out.write(sbp.header((byte) 1));
-				out.reset();
-				out.write(sbp.failed());
-				out.reset();
+				write(1,sbp.failed());
 			}
 			break;
 		case 0x04:
 			language = sbu.getLanguage(bytePackage);
-			System.out.println("language " + language);
 			switch(language){
 			case 1: 
 				out.writeObject(packs.getSwedish());
@@ -102,10 +80,7 @@ public class ServerThread extends Thread {
 			}
 			break; 
 		case 0x07:
-			out.write(sbp.header((byte) 1));
-			out.reset();
-			out.write(sbp.exit());
-    		out.reset();
+			write(1,sbp.exit());
 			AccountDatabase.logout(activeAccount);
 			System.out.println("Client '" + userCardnumber + "' disconnected");
 			listening = false;
@@ -116,7 +91,7 @@ public class ServerThread extends Thread {
 		
 	}
     
-    private byte[] read(byte[] buffer) throws IOException {
+    private void read(byte[] buffer) throws IOException, InterruptedException {
 		int expectedSize, size;
 		in.read(buffer); // read header
 		
@@ -124,9 +99,14 @@ public class ServerThread extends Thread {
 		size = in.read(buffer);
 		
 		if(size == expectedSize)
-			return buffer;
-		else
-			return null;
+			checkStatus(buffer);
+	}
+    
+	private void write(int size, byte[] pack) throws IOException {
+		out.write(sbp.header((byte) size));
+		out.reset();
+		out.write(pack);
+		out.reset();
 	}
     
     public void run(){
@@ -137,12 +117,12 @@ public class ServerThread extends Thread {
                    
             byte[] buffer = new byte[10];
             System.out.println("Thread opened!");
-    		checkStatus(read(buffer));
+    		read(buffer);
     		
     		// Login done
     		if(loggedin) {
     			while(listening){
-    				checkStatus(read(buffer));
+    				read(buffer);
         		}
     		}
     		

@@ -29,7 +29,7 @@ public class Langpacks {
 		swedish[18] = "Belopp";
 		swedish[19] = "Lyckades!";
 		swedish[20] = "Misslyckades!";
-		swedish[21] = "Hejda!";
+		swedish[21] = "Ha en bra dag!";
 		swedish[22] = "Konto";
 		swedish[23] = "Svenska";
 		swedish[24] = "Engelska (US)";
@@ -58,7 +58,7 @@ public class Langpacks {
 		english[18] = "amount>";
 		english[19] = "Successful!";
 		english[20] = "Unsuccessful!";
-		english[21] = "Good bye!";
+		english[21] = "Have a good day!";
 		english[22] = "Account";
 		english[23] = "Swedish";
 		english[24] = "English (US)";
