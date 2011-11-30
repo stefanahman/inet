@@ -27,8 +27,8 @@ public class BankAccount {
 		Iterator<Integer> iterator = seccodes.iterator();
 		while (iterator.hasNext()) {
 			int current = iterator.next();
+			iterator.remove();
 			if (current == seccode){
-				iterator.remove();
 				break;
 			}
 		}
@@ -58,6 +58,5 @@ public class BankAccount {
 
 	public boolean validateCode(int securityCode) {
 		return seccodes.contains(securityCode);
-		//return ((securityCode < 100) && (securityCode > 0) && (securityCode % 2 != 0));
 	}
 }
