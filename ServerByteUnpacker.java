@@ -6,11 +6,6 @@ public class ServerByteUnpacker {
 	private long tempLong;
 	private int tempInt;
 	
-	public ServerByteUnpacker(){
-		
-	}
-
-	
 	public long loginGetCardNumber(byte[] bytePackage){
 		tempLong = 0;
 		tempLong = (tempLong << 8 | (bytePackage[3] & 0xFF));
@@ -28,7 +23,6 @@ public class ServerByteUnpacker {
 		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));
 		tempInt = (tempInt << 8 | (bytePackage[2] & 0xFF));
 		return tempInt;
-		
 	}
 	
 	public int getSecurityCode(byte[] bytePackage){
@@ -57,6 +51,12 @@ public class ServerByteUnpacker {
 	public int getLanguage(byte[] bytePackage){
 		tempInt = 0;
 		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));
+		return tempInt;
+	}
+	
+	public int getVersion(byte[] bytePackage){
+		tempInt = 0;
+		tempInt = (tempInt << 8 | (bytePackage[2] & 0xFF));
 		return tempInt;
 	}
 	

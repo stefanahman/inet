@@ -12,6 +12,8 @@ public class Client {
 	private static Language lang = new Language();
 	
 	private static boolean verification = false;
+	private static int ver = 0;
+	private static int  langOpt = 2;
 	private static Scanner scanner = new Scanner(System.in);
 	
 	private static ClientBytePacker cbp = new ClientBytePacker();
@@ -21,26 +23,25 @@ public class Client {
 	 */
 	
 	private static void checkStatus(byte[] bytePackage) throws IOException{
+		System.out.println("bytePackage[0]: " + bytePackage[0]);
 		switch(bytePackage[0]){
-		case 0x00:
-			verification = true;
+		case 0:
+			if(cbu.getVerify(bytePackage) == 1)
+				verification = true;
+			else
+				verification = false;
 			break;
-		case 0x01:
-			verification = false;
-			break;
-		case 0x02:
+		case 1:
+			System.out.println(lang.receivingBalance);
 			System.out.println(lang.account + ": $" + cbu.getBalance(bytePackage));
-			break;
-		case 0x03:
-			break;
-		case 0x04:
 			break;
 		default:
 			break;
 		}
 	}
 	
-	private static void menu(){
+	private static void menu() throws IOException{
+		write(1,cbp.requestHeader(ver));
 		System.out.println("");
 		System.out.println(lang.menu);
 		System.out.println("---------------------------");
@@ -62,12 +63,15 @@ public class Client {
 	private static void read(byte[] buffer) throws IOException {
 		int expectedSize, size;
 		in.read(buffer); // read header
-		
 		expectedSize = (int) buffer[0];
-		size = in.read(buffer);
-		
-		if(size == expectedSize)
+		size = in.read(buffer); // read content
+		if(size == expectedSize){
 			checkStatus(buffer);
+		} else if(expectedSize > 0) {
+			System.err.println("Error: " + buffer[0]);
+			System.err.println("Header mismatch:");
+			System.err.println("Size: " + size + ", Expected size: " + expectedSize);
+		}
 	}
 	
 	private static void write(int size, byte[] pack) throws IOException {
@@ -96,16 +100,21 @@ public class Client {
             System.exit(1);
         }
         
-        System.out.println("--------------------------");
-        System.out.println(lang.welcome);
-        System.out.println("--------------------------");
-        System.out.println("");
-        
         byte[] buffer = new byte[10];
         
         int securitycode;
         long amount;
         int menuOption;
+        
+        
+        write(2,cbp.setLang(langOpt));
+        String[] bufferLang = (String[]) in.readObject();
+    	lang.updateLanguage(bufferLang);
+        
+        System.out.println("--------------------------");
+        System.out.println(lang.welcome);
+        System.out.println("--------------------------");
+        System.out.println("");
         
         System.out.print(lang.cardnumber);
         long cardnumber = scanner.nextLong();
@@ -130,7 +139,6 @@ public class Client {
             	switch(menuOption){
             	case 1: // balance
             		write(1,cbp.balance());
-            		System.out.println(lang.receivingBalance);
             		read(buffer);
             		anykey();
             		break;
@@ -142,7 +150,6 @@ public class Client {
             		write(10,cbp.withdrawal(securitycode, amount));
             		System.out.print(lang.verificate);
             		read(buffer);
-            		
             		if(verification)
             			System.out.println(lang.successful);
             		else
@@ -157,7 +164,6 @@ public class Client {
             		write(10,cbp.deposit(securitycode, amount));
             		System.out.print(lang.verificate);
             		read(buffer);
-            		
             		if(verification)
             			System.out.println(lang.successful);
             		else
@@ -167,10 +173,10 @@ public class Client {
             	case 6:
             		System.out.println(lang.sv_se);
             		System.out.println(lang.en_us);
-            		int langOpt = scanner.nextInt();
+            		langOpt = scanner.nextInt();
             		if(langOpt > 0 && langOpt < 3) {
                     	write(2,cbp.setLang(langOpt));
-                    	String[] bufferLang = (String[]) in.readObject();
+                    	bufferLang = (String[]) in.readObject();
                     	lang.updateLanguage(bufferLang);
             		} else 
             			System.out.println(lang.invalid);

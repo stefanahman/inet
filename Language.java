@@ -2,31 +2,31 @@
 
 public class Language {
 
-	public String menu = "What would you like to do?";
-	public String menu1 = "(1)Balance"; 
-	public String menu2 = "(2)Withdrawal"; 
-	public String menu3 = "(3)Deposit"; 
-	public String menu6 = "(6)Change language"; 
-	public String menu7 = "(7)Exit"; 
-	public String anyKeymessage = "Press any key to continue.."; 
-	public String misingIP = "Missing argument ip-adress"; 
-	public String unknownHost = "Unknown host: "; 
-	public String noConnection = "Couldn't open connection to ";
-	public String welcome = "Welcome to iBank "; 
-	public String cardnumber = "cardnumber> "; 
-	public String pin = "pin> "; 
-	public String verificate = "Verificating ... ";
-	public String valid = "Valid!"; 
-	public String invalid = "Invalid!"; 
-	public String receivingBalance = "Receiving balance ..."; 
-	public String securityCode = "securitycode> ";
-	public String amount = "amount>";
-	public String successful = "Successful!";
-	public String unsuccessful = "Unsuccessful!";
-	public String goodBye = "Good bye!";
-	public String account = "Account";
-	public String sv_se = "Swedish";
-	public String en_us = "English (US)";
+	public String menu;
+	public String menu1; 
+	public String menu2; 
+	public String menu3; 
+	public String menu6; 
+	public String menu7; 
+	public String anyKeymessage; 
+	public String misingIP; 
+	public String unknownHost; 
+	public String noConnection;
+	public String welcome; 
+	public String cardnumber; 
+	public String pin; 
+	public String verificate;
+	public String valid; 
+	public String invalid; 
+	public String receivingBalance; 
+	public String securityCode;
+	public String amount;
+	public String successful;
+	public String unsuccessful;
+	public String goodBye;
+	public String account;
+	public String sv_se;
+	public String en_us;
 
 	public Language(){
 	}

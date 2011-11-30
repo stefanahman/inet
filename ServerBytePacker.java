@@ -1,9 +1,8 @@
 
 public class ServerBytePacker {
 	
-	final byte SUCCESS = 0x00;
-	final byte FAILED = 0x01;
-	final byte BALANCE = 0x02;
+	final byte VERIFICATION = 0x00;
+	final byte BALANCE = 0x01;
 	final byte EXIT = 0x07;
 	
 	public byte[] header(byte size){
@@ -12,16 +11,11 @@ public class ServerBytePacker {
 		return bytePackage1;
 	}
 	
-	public byte[] success(){
-		byte[] bytePackage1 = new byte[1];
-		bytePackage1[0] = SUCCESS;
-		return bytePackage1;
-	} 
-	
-	public byte[] failed(){
-		byte[] bytePackage1 = new byte[1];
-		bytePackage1[0] = FAILED;
-		return bytePackage1;
+	public byte[] verify(int status){
+		byte[] bytePackage2 = new byte[2];
+		bytePackage2[0] = VERIFICATION;
+		bytePackage2[1] = (byte) status;
+		return bytePackage2;
 	}
 	
 	public byte[] balance(long balance){

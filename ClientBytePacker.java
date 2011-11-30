@@ -6,6 +6,7 @@ public class ClientBytePacker {
 	final byte WITHDRAWAL = 0x02;
 	final byte DEPOSIT = 0x03;
 	final byte LANGUAGE = 0x04;
+	final byte REQUEST = 0x05;
 	final byte EXIT = 0x07;
 	
 	public byte[] header(byte size){
@@ -76,5 +77,12 @@ public class ClientBytePacker {
 		byte[] bytePackage1 = new byte[1];
 		bytePackage1[0] = EXIT;
 		return bytePackage1;
+	}
+
+	public byte[] requestHeader(int ver) {
+		byte[] bytePackage2 = new byte[2];
+		bytePackage2[0] = REQUEST;
+		bytePackage2[1] = (byte) ver;
+		return bytePackage2;
 	}
 }
