@@ -1,1 +1,7 @@
 *.class
+
+AccountDatabase.class
+
+BankAccount.class
+
+Client.class
