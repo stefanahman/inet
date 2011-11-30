@@ -3,6 +3,7 @@ public class ServerBytePacker {
 	
 	final byte VERIFICATION = 0x00;
 	final byte BALANCE = 0x01;
+	final byte VERSION = 0x05;
 	final byte EXIT = 0x07;
 	
 	public byte[] header(byte size){
@@ -31,6 +32,13 @@ public class ServerBytePacker {
 		bytePackage10[8] = (byte)(balance >> 8);
 		bytePackage10[9] = (byte)(balance >> 0);
 		return bytePackage10;
+	}
+	
+	public byte[] verison(int ver){
+		byte[] bytePackage2 = new byte[2];
+		bytePackage2[0] = VERSION;
+		bytePackage2[1] = (byte) ver;
+		return bytePackage2;
 	}
 	
 	public byte[] exit(){

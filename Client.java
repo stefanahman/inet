@@ -15,6 +15,13 @@ public class Client {
 	private static int ver = 0;
 	private static int  langOpt = 2;
 	private static Scanner scanner = new Scanner(System.in);
+	private static byte[] buffer = new byte[10];
+	private static String[] bufferArray;
+	private static String banner;
+    
+	private static int securitycode;
+	private static long amount;
+	private static int menuOption;
 	
 	private static ClientBytePacker cbp = new ClientBytePacker();
 	private static ClientByteUnpacker cbu = new ClientByteUnpacker();
@@ -23,7 +30,6 @@ public class Client {
 	 */
 	
 	private static void checkStatus(byte[] bytePackage) throws IOException{
-		System.out.println("bytePackage[0]: " + bytePackage[0]);
 		switch(bytePackage[0]){
 		case 0:
 			if(cbu.getVerify(bytePackage) == 1)
@@ -35,13 +41,25 @@ public class Client {
 			System.out.println(lang.receivingBalance);
 			System.out.println(lang.account + ": $" + cbu.getBalance(bytePackage));
 			break;
+		case 5:
+			ver = cbu.getVersion(bytePackage);
 		default:
 			break;
 		}
 	}
 	
-	private static void menu() throws IOException{
-		write(1,cbp.requestHeader(ver));
+	private static void menu() throws IOException, ClassNotFoundException{
+		write(2,cbp.requestBanner(ver));
+		read(buffer);
+		if(verification){
+			read(buffer);
+			banner = (String) in.readObject();
+		}
+		System.out.println(((char) 27)+"[2J");
+		System.out.println("");
+		System.out.println("---------------------------");
+		System.out.println(banner);
+		System.out.println("---------------------------");
 		System.out.println("");
 		System.out.println(lang.menu);
 		System.out.println("---------------------------");
@@ -100,16 +118,9 @@ public class Client {
             System.exit(1);
         }
         
-        byte[] buffer = new byte[10];
-        
-        int securitycode;
-        long amount;
-        int menuOption;
-        
-        
         write(2,cbp.setLang(langOpt));
-        String[] bufferLang = (String[]) in.readObject();
-    	lang.updateLanguage(bufferLang);
+        bufferArray = (String[]) in.readObject();
+    	lang.updateLanguage(bufferArray);
         
         System.out.println("--------------------------");
         System.out.println(lang.welcome);
@@ -126,7 +137,7 @@ public class Client {
         System.out.println("");
         System.out.print(lang.verificate);
         
-        read(buffer);
+        read(buffer); // login verify
         // Login done
         
         if(verification){
@@ -173,11 +184,12 @@ public class Client {
             	case 6:
             		System.out.println(lang.sv_se);
             		System.out.println(lang.en_us);
+            		System.out.print("> ");
             		langOpt = scanner.nextInt();
             		if(langOpt > 0 && langOpt < 3) {
                     	write(2,cbp.setLang(langOpt));
-                    	bufferLang = (String[]) in.readObject();
-                    	lang.updateLanguage(bufferLang);
+                    	bufferArray = (String[]) in.readObject();
+                    	lang.updateLanguage(bufferArray);
             		} else 
             			System.out.println(lang.invalid);
             		anykey();

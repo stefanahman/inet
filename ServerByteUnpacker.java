@@ -56,7 +56,7 @@ public class ServerByteUnpacker {
 	
 	public int getVersion(byte[] bytePackage){
 		tempInt = 0;
-		tempInt = (tempInt << 8 | (bytePackage[2] & 0xFF));
+		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));
 		return tempInt;
 	}
 	

@@ -31,8 +31,8 @@ public class Langpacks {
 		swedish[20] = "Misslyckades!";
 		swedish[21] = "Ha en bra dag!";
 		swedish[22] = "Konto";
-		swedish[23] = "Svenska";
-		swedish[24] = "Engelska (US)";
+		swedish[23] = "(1)Svenska";
+		swedish[24] = "(2)Engelska (US)";
 		return swedish;
 	}
 	public String[] getEnglish() {
@@ -60,8 +60,8 @@ public class Langpacks {
 		english[20] = "Unsuccessful!";
 		english[21] = "Have a good day!";
 		english[22] = "Account";
-		english[23] = "Swedish";
-		english[24] = "English (US)";
+		english[23] = "(1)Swedish";
+		english[24] = "(2)English (US)";
 		return english;
 	}
 }

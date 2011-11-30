@@ -11,11 +11,14 @@ public class ServerThread extends Thread {
     private int userPin;
     private int securitycode;
     private int language;
+    private int currentLang;
     private int clientVersion;
+    private int currentVersion;
     private long amount;
     private long balance;
     private BankAccount activeAccount;
     
+    private static Banner banner = new Banner();
     private static Langpacks packs = new Langpacks();
 	
 	private ServerByteUnpacker sbu = new ServerByteUnpacker();
@@ -82,10 +85,15 @@ public class ServerThread extends Thread {
 			break; 
 		case 5:
 			clientVersion = sbu.getVersion(bytePackage);
-			currentVersion = banner.bannerNeedsUpdate(version);
-			if(clientVersion != currentVersion){
-				write(1,sbp.version(currentVersion));
+			currentVersion = banner.bannerNeedsUpdate(clientVersion);
+			if((clientVersion != currentVersion) || (currentLang != language)){
+				currentLang = language;
+				write(2,sbp.verify(1));
+				write(2,sbp.verison(currentVersion));
 				out.writeObject(banner.getLatest(language));
+				out.reset();
+			} else {
+				write(2,sbp.verify(0));
 			}
 			break;
 		case 7:
@@ -106,7 +114,7 @@ public class ServerThread extends Thread {
 		size = in.read(buffer); // read content
 		if(size == expectedSize){
 			checkStatus(buffer);
-		} else if(expectedSize > 0) {
+		} else if(size != -1) {
 			System.err.println("Error: " + buffer[0]);
 			System.err.println("Header mismatch:");
 			System.err.println("Size: " + size + ", Expected size: " + expectedSize);
@@ -127,8 +135,8 @@ public class ServerThread extends Thread {
                    
             byte[] buffer = new byte[10];
             System.out.println("Thread opened!");
-    		read(buffer);
-    		read(buffer);
+    		read(buffer); // read lang
+    		read(buffer); // read login
     		
     		// Login done
     		if(loggedin) {

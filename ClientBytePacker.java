@@ -79,7 +79,7 @@ public class ClientBytePacker {
 		return bytePackage1;
 	}
 
-	public byte[] requestHeader(int ver) {
+	public byte[] requestBanner(int ver) {
 		byte[] bytePackage2 = new byte[2];
 		bytePackage2[0] = REQUEST;
 		bytePackage2[1] = (byte) ver;
