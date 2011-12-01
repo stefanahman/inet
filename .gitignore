@@ -1,9 +1,3 @@
+inet/*.class
+
 *.class
-
-AccountDatabase.class
-
-BankAccount.class
-
-Client.class
-
-BankAccount.class
