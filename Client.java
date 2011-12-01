@@ -2,33 +2,47 @@ import java.io.*;
 import java.net.*;  
 import java.util.Scanner;
 
+/**
+ * The Class Client.
+ * 
+ * @author Marcus Wallstersson, mwallst@kth.se
+ * @author Stefan Åhman, sahman@kth.se
+ */
 public class Client {
+	
 	private static int connectionPort = 8989;
-
 	private static Socket socket = null;
+	
 	private static ObjectOutputStream out = null;
 	private static ObjectInputStream in = null;
+	
+	private static Scanner scanner = new Scanner(System.in);
+
 	private static String adress = "";
+	private static String[] bufferArray;
+	private static String banner;
+	
+	private static int ver = 0;
+	private static int  langOpt = 2;
+	private static int menuOption;
+	private static int securitycode;
+	private static long amount;
+	
 	private static Language lang = new Language();
 	
 	private static boolean verification = false;
-	private static int ver = 0;
-	private static int  langOpt = 2;
-	private static Scanner scanner = new Scanner(System.in);
-	private static byte[] buffer = new byte[10];
-	private static String[] bufferArray;
-	private static String banner;
-    
-	private static int securitycode;
-	private static long amount;
-	private static int menuOption;
 	
+	private static byte[] buffer = new byte[10];
+
 	private static ClientBytePacker cbp = new ClientBytePacker();
 	private static ClientByteUnpacker cbu = new ClientByteUnpacker();
-	/**
-	 * @param args
-	 */
 	
+	/**
+	 * Check status of package.
+	 *
+	 * @param bytePackage the byte package
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private static void checkStatus(byte[] bytePackage) throws IOException{
 		switch(bytePackage[0]){
 		case 0:
@@ -48,6 +62,12 @@ public class Client {
 		}
 	}
 	
+	/**
+	 * Menu will print the menu of the client.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws ClassNotFoundException the class not found exception
+	 */
 	private static void menu() throws IOException, ClassNotFoundException{
 		write(2,cbp.requestBanner(ver));
 		read(buffer);
@@ -71,6 +91,9 @@ public class Client {
 		System.out.println("---------------------------");
 	}
 	
+	/**
+	 * Anykey prompts the user to press any key to continue.
+	 */
 	private static void anykey(){
 		System.out.println("");
 		System.out.println(lang.anyKeymessage);
@@ -78,6 +101,12 @@ public class Client {
 		scanner.nextLine();
 	}
 	
+	/**
+	 * Read will read header and and message package sent from the server.
+	 *
+	 * @param buffer the buffer
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private static void read(byte[] buffer) throws IOException {
 		int expectedSize, size;
 		in.read(buffer); // read header
@@ -92,6 +121,13 @@ public class Client {
 		}
 	}
 	
+	/**
+	 * Write will send header and message package to the server.
+	 *
+	 * @param size the size
+	 * @param pack the pack
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private static void write(int size, byte[] pack) throws IOException {
 		out.write(cbp.header((byte) size));
 		out.reset();
@@ -99,6 +135,14 @@ public class Client {
 		out.reset();
 	}
 	
+	/**
+	 * The main method, connect client and prompt user menu.
+	 *
+	 * @param args the arguments
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 * @throws ClassNotFoundException the class not found exception
+	 */
 	public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         try {
             adress = args[0];

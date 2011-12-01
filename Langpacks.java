@@ -1,12 +1,26 @@
-// Class for server to create langpacks
+
+/**
+ * The Class Langpacks.
+ * 
+ * @author Marcus Wallstersson, mwallst@kth.se
+ * @author Stefan Åhman, sahman@kth.se
+ */
 public class Langpacks {
 
 	String[] swedish = new String[25];
 	String[] english = new String[25];
 	
+	/**
+	 * Instantiates a new langpacks.
+	 */
 	public Langpacks(){
 	}
 
+	/**
+	 * Gets the swedish langpack.
+	 *
+	 * @return the swedish
+	 */
 	public String[] getSwedish() {
 		swedish[0] = "Vad vill du gora?";
 		swedish[1] = "(1)Balans";
@@ -35,6 +49,12 @@ public class Langpacks {
 		swedish[24] = "(2)Engelska (US)";
 		return swedish;
 	}
+	
+	/**
+	 * Gets the english langpack.
+	 *
+	 * @return the english
+	 */
 	public String[] getEnglish() {
 		
 		english[0] = "What would you like to do?";

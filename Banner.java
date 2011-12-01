@@ -3,11 +3,20 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * The Class Banner.
+ * 
+ * @author Marcus Wallstersson, mwallst@kth.se
+ * @author Stefan Åhman, sahman@kth.se
+ */
 public class Banner {
 
 	int verOfIni;
 	Properties p = new Properties();
 
+	/**
+	 * Instantiates a new banner.
+	 */
 	public Banner() {
 		try {
 			p.load(new FileInputStream("bank.ini"));
@@ -19,6 +28,12 @@ public class Banner {
 		}
 	}
 	
+	/**
+	 * Banner needs update, returns version of ini-file.
+	 *
+	 * @param ver the ver
+	 * @return the int
+	 */
 	public int bannerNeedsUpdate(int ver){
 		try {
 			p.load(new FileInputStream("bank.ini"));
@@ -31,6 +46,12 @@ public class Banner {
 		return this.verOfIni;
 	}
 	
+	/**
+	 * Gets the banner from ini-file.
+	 *
+	 * @param lang the lang
+	 * @return the latest
+	 */
 	public String getLatest(int lang) {
 		try {
 			p.load(new FileInputStream("bank.ini"));

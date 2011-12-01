@@ -1,6 +1,14 @@
-
+/**
+ * The Class ClientBytePacker.
+ * 
+ * @author Marcus Wallstersson, mwallst@kth.se
+ * @author Stefan Åhman, sahman@kth.se
+ */
 public class ClientBytePacker {
 
+	/**
+	 * Status codes for byte packages.
+	 */
 	final byte LOGIN = 0x00;
 	final byte BALANCE = 0x01;
 	final byte WITHDRAWAL = 0x02;
@@ -9,12 +17,25 @@ public class ClientBytePacker {
 	final byte REQUEST = 0x05;
 	final byte EXIT = 0x07;
 	
+	/**
+	 * Header package, containing the size of the message package in bytes.
+	 *
+	 * @param size     the size
+	 * @return byte package for header
+	 */
 	public byte[] header(byte size){
 		byte[] bytePackage1 = new byte[1];
 		bytePackage1[0] = size;
 		return bytePackage1;
 	}
 	
+	/**
+	 * Login message.
+	 *
+	 * @param cardnumber the cardnumber
+	 * @param pin the pin
+	 * @return byte package for login
+	 */
 	public byte[] login(long cardnumber, int pin){
 		byte[] bytePackage10 = new byte[10];
 		bytePackage10[0] = LOGIN;
@@ -30,12 +51,24 @@ public class ClientBytePacker {
 		return bytePackage10;
 	}
 	
+	/**
+	 * Balance message packagee.
+	 *
+	 * @return byte package for balance
+	 */
 	public byte[] balance(){
 		byte[] bytePackage1 = new byte[1];
 		bytePackage1[0] = BALANCE;
 		return bytePackage1;	
 	}
 	
+	/**
+	 * Withdrawal message package.
+	 *
+	 * @param securityCode the security code
+	 * @param amount the amount
+	 * @return byte package for withdrawal
+	 */
 	public byte[] withdrawal(int securityCode, long amount){
 		byte[] bytePackage10 = new byte[10];
 		bytePackage10[0] = WITHDRAWAL;
@@ -51,6 +84,13 @@ public class ClientBytePacker {
 		return bytePackage10;	
 	}
 	
+	/**
+	 * Deposit message package.
+	 *
+	 * @param securityCode the security code
+	 * @param amount the amount
+	 * @return byte package for deposit
+	 */
 	public byte[] deposit(int securityCode, long amount){
 		byte[] bytePackage10 = new byte[10];
 		bytePackage10[0] = DEPOSIT;
@@ -66,6 +106,12 @@ public class ClientBytePacker {
 		return bytePackage10;	
 	}
 	
+	/**
+	 * Lang request package.
+	 *
+	 * @param lang the lang
+	 * @return byte package for lang request
+	 */
 	public byte[] setLang(int lang){
 		byte[] bytePackage2 = new byte[2];
 		bytePackage2[0] = LANGUAGE;
@@ -73,12 +119,23 @@ public class ClientBytePacker {
 		return bytePackage2;
 	}
 	 
+	/**
+	 * Exit message.
+	 *
+	 * @return byte package for exit
+	 */
 	public byte[] exit(){
 		byte[] bytePackage1 = new byte[1];
 		bytePackage1[0] = EXIT;
 		return bytePackage1;
 	}
 
+	/**
+	 * Request banner message.
+	 *
+	 * @param ver the ver
+	 * @return byte package for banner
+	 */
 	public byte[] requestBanner(int ver) {
 		byte[] bytePackage2 = new byte[2];
 		bytePackage2[0] = REQUEST;

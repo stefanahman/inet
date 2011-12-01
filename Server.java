@@ -1,14 +1,22 @@
 import java.net.*;
 import java.io.*;
 
-
 /**
- *  @author Viebrapadata
-*/
+ * The Class Server.
+ *
+ * @author Marcus Wallstersson, mwallst@kth.se
+ * @author Stefan Åhman, sahman@kth.se
+ */
 public class Server {
 
     private static int connectionPort = 8989;
     
+    /**
+     * The main method start, creates new server threads when client connects.
+     *
+     * @param args the arguments
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static void main(String[] args) throws IOException {
         
         ServerSocket serverSocket = null;

@@ -1,40 +1,63 @@
 import java.io.*;
 import java.net.*;
 
+/**
+ * The Class ServerThread.
+ * 
+ * @author Marcus Wallstersson, mwallst@kth.se
+ * @author Stefan Åhman, sahman@kth.se
+ */
 public class ServerThread extends Thread {
+	
 	private Socket socket = null;
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    
     private boolean loggedin = false;
     private boolean listening = true;
-    private long userCardnumber;
+    
     private int userPin;
     private int securitycode;
     private int language;
     private int currentLang;
     private int clientVersion;
-    private int currentVersion;
+    private int currentVersion;   
+    private long userCardnumber;
     private long amount;
     private long balance;
+    
     private BankAccount activeAccount;
     
     private static Banner banner = new Banner();
     private static Langpacks packs = new Langpacks();
-	
+    
 	private ServerByteUnpacker sbu = new ServerByteUnpacker();
 	private ServerBytePacker sbp = new ServerBytePacker();
+    
+    /**
+     * Instantiates a new server thread.
+     *
+     * @param socket the socket
+     * @throws SocketException the socket exception
+     */
     public ServerThread(Socket socket) throws SocketException {
         super("ServerThread");
         this.socket = socket;
     }
     
+    /**
+     * Check status of recieved package.
+     *
+     * @param bytePackage the byte package
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws InterruptedException the interrupted exception
+     */
     private void checkStatus(byte[] bytePackage) throws IOException, InterruptedException{
     	switch(bytePackage[0]){
 		case 0:
 			userCardnumber = sbu.loginGetCardNumber(bytePackage);
 			userPin = sbu.loginGetPin(bytePackage);
 			activeAccount = AccountDatabase.login(userCardnumber, userPin);
-			//sleep(2000);
 			if(activeAccount != null){
 				System.out.println("Client '" + userCardnumber + "' connected");
 				loggedin = true;
@@ -45,7 +68,6 @@ public class ServerThread extends Thread {
 			}
 			break;
 		case 1: // Balance
-			//sleep(2000);
 			balance = activeAccount.getBalance();
 			write(10,sbp.balance(balance));
 			
@@ -53,7 +75,6 @@ public class ServerThread extends Thread {
 		case 2:  // Withrawal
 			securitycode = sbu.getSecurityCode(bytePackage);
 			amount = sbu.getAmount(bytePackage);
-			//sleep(2000);
 			if(activeAccount.withdrawal(amount, securitycode)){
 				write(2,sbp.verify(1));
 			} else {
@@ -63,14 +84,13 @@ public class ServerThread extends Thread {
 		case 3: // Deposit
 			securitycode = sbu.getSecurityCode(bytePackage);
 			amount = sbu.getAmount(bytePackage);
-			//sleep(2000);
 			if(activeAccount.deposit(amount, securitycode)){
 				write(2,sbp.verify(1));
 			} else {
 				write(2,sbp.verify(0));
 			}
 			break;
-		case 4:
+		case 4: // Language
 			language = sbu.getLanguage(bytePackage);
 			switch(language){
 			case 1: 
@@ -83,7 +103,7 @@ public class ServerThread extends Thread {
 				break;
 			}
 			break; 
-		case 5:
+		case 5: // Banner update
 			clientVersion = sbu.getVersion(bytePackage);
 			currentVersion = banner.bannerNeedsUpdate(clientVersion);
 			if((clientVersion != currentVersion) || (currentLang != language)){
@@ -96,7 +116,7 @@ public class ServerThread extends Thread {
 				write(2,sbp.verify(0));
 			}
 			break;
-		case 7:
+		case 7: // Exit
 			write(1,sbp.exit());
 			AccountDatabase.logout(activeAccount);
 			System.out.println("Client '" + userCardnumber + "' disconnected");
@@ -107,6 +127,13 @@ public class ServerThread extends Thread {
 		}
 	}
     
+    /**
+     * Read package from socket.
+     *
+     * @param buffer the buffer
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws InterruptedException the interrupted exception
+     */
     private void read(byte[] buffer) throws IOException, InterruptedException {
 		int expectedSize, size;
 		in.read(buffer); // read header
@@ -121,6 +148,13 @@ public class ServerThread extends Thread {
 		}
 	}
     
+	/**
+	 * Write to socket.
+	 *
+	 * @param size the size
+	 * @param pack the pack
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private void write(int size, byte[] pack) throws IOException {
 		out.write(sbp.header((byte) size));
 		out.reset();
@@ -128,6 +162,7 @@ public class ServerThread extends Thread {
 		out.reset();
 	}
     
+
     public void run(){
     	try {
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -154,9 +189,7 @@ public class ServerThread extends Thread {
     			System.out.println("Client '" + userCardnumber + "' disconnected");
     		}
     		System.out.println("Closed thread!");
-            // e.printStackTrace();
         } catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }

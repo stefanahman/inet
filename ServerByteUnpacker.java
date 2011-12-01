@@ -1,11 +1,21 @@
-
+/**
+ * The Class ServerByteUnpacker.
+ * 
+ * @author Marcus Wallstersson, mwallst@kth.se
+ * @author Stefan Åhman, sahman@kth.se
+ */
 public class ServerByteUnpacker {
-	
 	
 	private byte tempByte;
 	private long tempLong;
 	private int tempInt;
 	
+	/**
+	 * Login get card number from byte package.
+	 *
+	 * @param bytePackage the byte package
+	 * @return the long
+	 */
 	public long loginGetCardNumber(byte[] bytePackage){
 		tempLong = 0;
 		tempLong = (tempLong << 8 | (bytePackage[3] & 0xFF));
@@ -18,6 +28,12 @@ public class ServerByteUnpacker {
 		return tempLong;	
 	}
 	
+	/**
+	 * Login get pin from byte package.
+	 *
+	 * @param bytePackage the byte package
+	 * @return tempInt with pincode
+	 */
 	public int loginGetPin(byte[] bytePackage){
 		tempInt = 0;
 		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));
@@ -25,12 +41,24 @@ public class ServerByteUnpacker {
 		return tempInt;
 	}
 	
+	/**
+	 * Gets the security code from byte package.
+	 *
+	 * @param bytePackage the byte package
+	 * @return tempInt with the security code
+	 */
 	public int getSecurityCode(byte[] bytePackage){
 		tempInt = 0;
 		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));
 		return tempInt;
 	}
 	
+	/**
+	 * Gets the amount from byte package.
+	 *
+	 * @param bytePackage the byte package
+	 * @return tempInt with the amount
+	 */
 	public long getAmount(byte[] bytePackage){
 		tempLong = 0; 
 		tempLong = (tempLong << 8 | (bytePackage[3] & 0xFF));
@@ -43,17 +71,35 @@ public class ServerByteUnpacker {
 		return tempLong;	
 	}
 	
-	public long writeBalance(byte[] bytePackage){
+	/**
+	 * Write balance, send  on get balance request.
+	 *
+	 * @param bytePackage the byte package
+	 * @return tempInt with the balance
+	 */
+	/*public long writeBalance(byte[] bytePackage){
 		tempByte = 0;
 		return tempByte;
-	}
+	}*/
 	
+	/**
+	 * Gets the language.
+	 *
+	 * @param bytePackage the byte package
+	 * @return tempInt with the language
+	 */
 	public int getLanguage(byte[] bytePackage){
 		tempInt = 0;
 		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));
 		return tempInt;
 	}
 	
+	/**
+	 * Gets the version.
+	 *
+	 * @param bytePackage the byte package
+	 * @return tempInt with the version
+	 */
 	public int getVersion(byte[] bytePackage){
 		tempInt = 0;
 		tempInt = (tempInt << 8 | (bytePackage[1] & 0xFF));

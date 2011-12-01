@@ -1,36 +1,35 @@
-// Class for client to read langpacks from server
-
+/**
+ * The Class Language.
+ * 
+ * @author Marcus Wallstersson, mwallst@kth.se
+ * @author Stefan Åhman, sahman@kth.se
+ */
 public class Language {
 
-	public String menu;
-	public String menu1; 
-	public String menu2; 
-	public String menu3; 
-	public String menu6; 
-	public String menu7; 
-	public String anyKeymessage; 
-	public String misingIP; 
-	public String unknownHost; 
-	public String noConnection;
-	public String welcome; 
-	public String cardnumber; 
-	public String pin; 
+	public String menu, menu1, menu2, menu3, menu6, menu7;
+	public String anyKeymessage;
+	public String misingIP, unknownHost, noConnection;
+	public String welcome;
+	public String cardnumber, pin;
 	public String verificate;
-	public String valid; 
-	public String invalid; 
-	public String receivingBalance; 
-	public String securityCode;
-	public String amount;
-	public String successful;
-	public String unsuccessful;
+	public String valid, invalid;
+	public String receivingBalance, securityCode, amount;
+	public String successful, unsuccessful;
 	public String goodBye;
 	public String account;
-	public String sv_se;
-	public String en_us;
+	public String sv_se, en_us;
 
+	/**
+	 * Instantiates a new language.
+	 */
 	public Language(){
 	}
 
+	/**
+	 * Update language.
+	 *
+	 * @param pack the pack
+	 */
 	public void updateLanguage(String pack[]){
 		this.menu = pack[0];
 		this.menu1 = pack[1];
